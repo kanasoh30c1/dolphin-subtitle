@@ -10,16 +10,16 @@
       font-family: sans-serif;
     }
     button {
-      font-size: 30px;
+      font-size: 28px;
       margin: 10px;
       padding: 10px 20px;
     }
     #status {
-      font-size: 24px;
+      font-size: 20px;
       margin: 10px;
     }
     #current {
-      font-size: 28px;
+      font-size: 24px;
       margin: 20px;
       font-weight: bold;
     }
@@ -52,26 +52,45 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-// 👇 字幕リスト
+// 👇 字幕リスト（ここを増やす）
 const subtitles = [
-  { jp: "ようこそ！", en: "Welcome!" },
-  { jp: "ジャンプします！", en: "Jump!" },
-  { jp: "スピンします！", en: "Spin!" },
-  { jp: "ありがとうございました！", en: "Thank you!" }
+  {
+    jp: "イルカがジャンプします！",
+    easy: "いるかが ジャンプ します！",
+    en: "The dolphin will jump!",
+    zh: "海豚要跳跃了！"
+  },
+  {
+    jp: "高くジャンプしました！",
+    easy: "たかく ジャンプ しました！",
+    en: "It jumped high!",
+    zh: "它跳得很高！"
+  },
+  {
+    jp: "スピンします！",
+    easy: "スピン します！",
+    en: "Spin!",
+    zh: "旋转！"
+  },
+  {
+    jp: "ありがとうございました！",
+    easy: "ありがとうございました！",
+    en: "Thank you!",
+    zh: "谢谢观看！"
+  }
 ];
 
 let index = 0;
 
 // 更新処理
 function update() {
-  // Firebaseに送信
   set(ref(db, "subtitle"), subtitles[index]);
 
-  // 今何ページか表示
+  // ページ表示
   document.getElementById("status").textContent =
     (index + 1) + " / " + subtitles.length;
 
-  // 今のセリフ表示（日本語）
+  // 現在の文（確認用：日本語）
   document.getElementById("current").textContent =
     subtitles[index].jp;
 }
