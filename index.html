@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>字幕</title>
+
+  <style>
+    body {
+      background-color: white;   /* ← 白背景 */
+      color: black;              /* ← 黒文字 */
+      text-align: center;
+      font-size: 42px;
+      font-family: sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+
+    #text {
+      margin-top: 30px;
+      line-height: 1.5;
+    }
+
+    button {
+      font-size: 20px;
+      margin: 10px;
+      padding: 10px 15px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      background-color: #f0f0f0;
+    }
+  </style>
+</head>
+<body>
+
+<h1 id="text">ここに字幕が出ます</h1>
+
+<div>
+  <button onclick="setLang('jp')">日本語</button>
+  <button onclick="setLang('en')">English</button>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC604HE_gL1NfV40XKnnI9rnOTuaU0ElDo",
+  authDomain: "dolphin-subtitle.firebaseapp.com",
+  databaseURL: "https://dolphin-subtitle-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "dolphin-subtitle",
+  storageBucket: "dolphin-subtitle.firebasestorage.app",
+  messagingSenderId: "600861531107",
+  appId: "1:600861531107:web:6075d5f9a228fafde31ed6"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+let currentLang = "jp";
+let latestData = null;
+
+window.setLang = function(lang) {
+  currentLang = lang;
+  if (latestData) {
+    document.getElementById("text").textContent = latestData[currentLang];
+  }
+};
+
+const subtitleRef = ref(db, "subtitle");
+
+onValue(subtitleRef, (snapshot) => {
+  latestData = snapshot.val();
+  if (latestData) {
+    document.getElementById("text").textContent = latestData[currentLang];
+  }
+});
+</script>
+
+</body>
+</html>

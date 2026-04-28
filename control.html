@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>操作</title>
+
+  <style>
+    body {
+      text-align: center;
+      font-family: sans-serif;
+    }
+    button {
+      font-size: 30px;
+      margin: 10px;
+      padding: 10px 20px;
+    }
+    #status {
+      font-size: 24px;
+      margin: 10px;
+    }
+    #current {
+      font-size: 28px;
+      margin: 20px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+<h2>字幕操作</h2>
+
+<p id="status">0 / 0</p>
+<p id="current">---</p>
+
+<button onclick="prev()">◀ 前へ</button>
+<button onclick="next()">▶ 次へ</button>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
+import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC604HE_gL1NfV40XKnnI9rnOTuaU0ElDo",
+  authDomain: "dolphin-subtitle.firebaseapp.com",
+  databaseURL: "https://dolphin-subtitle-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "dolphin-subtitle",
+  storageBucket: "dolphin-subtitle.firebasestorage.app",
+  messagingSenderId: "600861531107",
+  appId: "1:600861531107:web:6075d5f9a228fafde31ed6"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+// 👇 字幕リスト
+const subtitles = [
+  { jp: "ようこそ！", en: "Welcome!" },
+  { jp: "ジャンプします！", en: "Jump!" },
+  { jp: "スピンします！", en: "Spin!" },
+  { jp: "ありがとうございました！", en: "Thank you!" }
+];
+
+let index = 0;
+
+// 更新処理
+function update() {
+  // Firebaseに送信
+  set(ref(db, "subtitle"), subtitles[index]);
+
+  // 今何ページか表示
+  document.getElementById("status").textContent =
+    (index + 1) + " / " + subtitles.length;
+
+  // 今のセリフ表示（日本語）
+  document.getElementById("current").textContent =
+    subtitles[index].jp;
+}
+
+// 次へ
+window.next = function() {
+  if (index < subtitles.length - 1) {
+    index++;
+    update();
+  }
+};
+
+// 前へ
+window.prev = function() {
+  if (index > 0) {
+    index--;
+    update();
+  }
+};
+
+// 初期表示
+update();
+
+</script>
+
+</body>
+</html>
