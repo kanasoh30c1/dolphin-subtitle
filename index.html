@@ -2,6 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>字幕</title>
 
   <style>
@@ -11,45 +12,45 @@
       text-align: center;
       font-family: sans-serif;
       margin: 0;
-      padding: 20px;
+      padding: 5vw;
     }
 
     #text {
-      font-size: 42px;
-      margin-top: 40px;
+      font-size: min(8vw, 60px); /* ← 自動サイズ */
+      line-height: 1.5;
+      font-weight: bold;
     }
 
     button {
-      font-size: 20px;
-      margin: 10px;
-      padding: 10px 15px;
+      font-size: 4vw;
+      padding: 2vw 4vw;
+      margin: 2vw;
+      border-radius: 10px;
+      border: 1px solid #ccc;
     }
 
     #langSelect {
-      margin-top: 100px;
+      margin-top: 20vh;
     }
 
     #changeBtn {
       position: fixed;
       bottom: 10px;
       right: 10px;
-      font-size: 16px;
+      font-size: 4vw;
     }
   </style>
 </head>
 <body>
 
-<!-- 言語選択画面 -->
 <div id="langSelect">
   <h2>言語を選択してください</h2>
   <button onclick="selectLang('jp')">日本語</button>
   <button onclick="selectLang('en')">English</button>
 </div>
 
-<!-- 字幕表示 -->
-<h1 id="text" style="display:none;">ここに字幕</h1>
+<h1 id="text" style="display:none;"></h1>
 
-<!-- 言語変更ボタン -->
 <button id="changeBtn" onclick="resetLang()" style="display:none;">
   言語変更
 </button>
@@ -74,10 +75,8 @@ const db = getDatabase(app);
 let currentLang = null;
 let latestData = null;
 
-// 言語選択
 window.selectLang = function(lang) {
   currentLang = lang;
-
   document.getElementById("langSelect").style.display = "none";
   document.getElementById("text").style.display = "block";
   document.getElementById("changeBtn").style.display = "block";
@@ -87,16 +86,13 @@ window.selectLang = function(lang) {
   }
 };
 
-// 言語リセット（選び直し）
 window.resetLang = function() {
   currentLang = null;
-
   document.getElementById("langSelect").style.display = "block";
   document.getElementById("text").style.display = "none";
   document.getElementById("changeBtn").style.display = "none";
 };
 
-// Firebase受信
 const subtitleRef = ref(db, "subtitle");
 
 onValue(subtitleRef, (snapshot) => {
