@@ -6,38 +6,53 @@
 
   <style>
     body {
-      background-color: white;   /* ← 白背景 */
-      color: black;              /* ← 黒文字 */
+      background-color: white;
+      color: black;
       text-align: center;
-      font-size: 42px;
       font-family: sans-serif;
       margin: 0;
       padding: 20px;
     }
 
     #text {
-      margin-top: 30px;
-      line-height: 1.5;
+      font-size: 42px;
+      margin-top: 40px;
     }
 
     button {
       font-size: 20px;
       margin: 10px;
       padding: 10px 15px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      background-color: #f0f0f0;
+    }
+
+    #langSelect {
+      margin-top: 100px;
+    }
+
+    #changeBtn {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      font-size: 16px;
     }
   </style>
 </head>
 <body>
 
-<h1 id="text">ここに字幕が出ます</h1>
-
-<div>
-  <button onclick="setLang('jp')">日本語</button>
-  <button onclick="setLang('en')">English</button>
+<!-- 言語選択画面 -->
+<div id="langSelect">
+  <h2>言語を選択してください</h2>
+  <button onclick="selectLang('jp')">日本語</button>
+  <button onclick="selectLang('en')">English</button>
 </div>
+
+<!-- 字幕表示 -->
+<h1 id="text" style="display:none;">ここに字幕</h1>
+
+<!-- 言語変更ボタン -->
+<button id="changeBtn" onclick="resetLang()" style="display:none;">
+  言語変更
+</button>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
@@ -56,21 +71,37 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-let currentLang = "jp";
+let currentLang = null;
 let latestData = null;
 
-window.setLang = function(lang) {
+// 言語選択
+window.selectLang = function(lang) {
   currentLang = lang;
+
+  document.getElementById("langSelect").style.display = "none";
+  document.getElementById("text").style.display = "block";
+  document.getElementById("changeBtn").style.display = "block";
+
   if (latestData) {
     document.getElementById("text").textContent = latestData[currentLang];
   }
 };
 
+// 言語リセット（選び直し）
+window.resetLang = function() {
+  currentLang = null;
+
+  document.getElementById("langSelect").style.display = "block";
+  document.getElementById("text").style.display = "none";
+  document.getElementById("changeBtn").style.display = "none";
+};
+
+// Firebase受信
 const subtitleRef = ref(db, "subtitle");
 
 onValue(subtitleRef, (snapshot) => {
   latestData = snapshot.val();
-  if (latestData) {
+  if (latestData && currentLang) {
     document.getElementById("text").textContent = latestData[currentLang];
   }
 });
